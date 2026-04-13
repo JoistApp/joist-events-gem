@@ -74,7 +74,7 @@ class ProcessUserEventJob
 end
 
 # Using GoodJob (alternative)
-class ProcessUserEventJob < ApplicationJob
+class ProcessUserEventGoodJob < ApplicationJob
   queue_as :events
 
   retry_on StandardError, wait: :exponentially_longer, attempts: 5

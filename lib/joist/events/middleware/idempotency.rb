@@ -40,11 +40,10 @@ module Joist
           end
 
           result = block.call
+          # Only mark as processed if the block succeeds
+          # If an exception is raised, it will propagate without marking as processed
           storage.mark_processed(message.id, ttl)
           result
-        rescue
-          # Don't mark as processed if it failed
-          raise
         end
 
         private

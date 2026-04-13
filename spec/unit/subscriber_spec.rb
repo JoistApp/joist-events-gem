@@ -2,24 +2,24 @@
 
 require "spec_helper"
 
-RSpec.describe Joist::Events::Subscriber do
-  # Test subscriber class
-  class TestSubscriber < Joist::Events::Subscriber
-    topic "user-events"
-    subscriber_name "test-service"
+# Test subscriber class for specs
+class TestSubscriber < Joist::Events::Subscriber
+  topic "user-events"
+  subscriber_name "test-service"
 
-    attr_reader :consumed_messages
+  attr_reader :consumed_messages
 
-    def initialize(options = {})
-      @consumed_messages = []
-      super
-    end
-
-    def consume!(message)
-      @consumed_messages << message
-    end
+  def initialize(options = {})
+    @consumed_messages = []
+    super
   end
 
+  def consume!(message)
+    @consumed_messages << message
+  end
+end
+
+RSpec.describe Joist::Events::Subscriber do
   before do
     Joist::Events.configure do |config|
       config.register_adapter(:memory)

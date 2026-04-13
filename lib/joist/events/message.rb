@@ -97,18 +97,22 @@ module Joist
         [id, topic, payload].hash
       end
 
+      class << self
+        private
+
+        def parse_timestamp(timestamp)
+          return timestamp if timestamp.is_a?(Time)
+          return Time.parse(timestamp) if timestamp.is_a?(String)
+          Time.now.utc
+        end
+      end
+
       private
 
       def validate!
         raise ArgumentError, "topic is required" if @topic.nil? || @topic.empty?
         raise ArgumentError, "payload must be a Hash" unless @payload.is_a?(Hash)
         raise ArgumentError, "timestamp must be a Time object" unless @timestamp.is_a?(Time)
-      end
-
-      def self.parse_timestamp(timestamp)
-        return timestamp if timestamp.is_a?(Time)
-        return Time.parse(timestamp) if timestamp.is_a?(String)
-        Time.now.utc
       end
     end
   end
