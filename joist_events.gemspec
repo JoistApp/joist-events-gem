@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Core dependencies
-  spec.add_dependency "activesupport", "~> 7.2.0"
+  spec.add_dependency "activesupport", ">= 7.2", "< 8.2"
 
   # Backend adapters (optional, load as needed)
   spec.add_dependency "google-cloud-pubsub", "~> 2.9", ">= 2.9.1" # GCP adapter
