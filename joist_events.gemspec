@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
 
   # Backend adapters (optional, load as needed)
   spec.add_dependency "google-cloud-pubsub", "~> 2.9", ">= 2.9.1" # GCP adapter
-  spec.add_dependency "bunny", "~> 2.22" # RabbitMQ/Amazon MQ adapter
+  spec.add_dependency "bunny", ">= 2.22", "< 4.0" # RabbitMQ/Amazon MQ adapter
 
   # Serialization
   spec.add_dependency "multi_json", "~> 1.15"
