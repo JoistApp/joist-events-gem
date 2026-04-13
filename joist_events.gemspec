@@ -42,7 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "standard", "~> 1.31"
   spec.add_development_dependency "simplecov", "~> 0.22"
   spec.add_development_dependency "webmock", "~> 3.19"
-  spec.add_development_dependency "fabrication", "~> 2.31"
+  spec.add_development_dependency "fabrication", "~> 3.0"
   spec.add_development_dependency "faker", "~> 3.2"
   spec.add_development_dependency "rake", "~> 13.0"
 end
