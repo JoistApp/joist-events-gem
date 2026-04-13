@@ -1,0 +1,84 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Example: Standalone subscriber process
+#
+# RECOMMENDED DEPLOYMENT:
+# Run this as a separate process/container, NOT inside Rails web workers
+#
+# Usage:
+#   bundle exec ruby bin/subscriber_process
+#
+# Docker/Kubernetes deployment:
+#   Deploy as separate deployment with independent scaling and memory limits
+
+require_relative "../../config/environment"
+
+# Configure for dedicated subscriber process
+Joist::Events.configure do |config|
+  config.register_adapter(
+    :gcp,
+    project_id: ENV.fetch("GCP_PROJECT_ID"),
+    # Subscriber process can use more threads safely
+    # (not sharing connection pool with web workers)
+    threads: 8,
+    streams: 2
+  )
+  config.default_adapter = :gcp
+  config.serializer = :json
+end
+
+# Define subscriber
+class UserEventsSubscriber < Joist::Events::RailsSubscriber
+  topic "user-events"
+  subscriber_name "user-service"
+
+  def consume!(message)
+    # Safe: Running in dedicated process
+    # Has its own database connection pool
+    # Memory isolated from web workers
+
+    case message.payload[:event]
+    when "user.created"
+      handle_user_created(message)
+    when "user.updated"
+      handle_user_updated(message)
+    else
+      Rails.logger.warn("Unknown event type: #{message.payload[:event]}")
+    end
+  end
+
+  private
+
+  def handle_user_created(message)
+    user = User.find(message.payload[:user_id])
+    # Process user creation...
+    Rails.logger.info("Processed user.created for user #{user.id}")
+  end
+
+  def handle_user_updated(message)
+    user = User.find(message.payload[:user_id])
+    # Process user update...
+    Rails.logger.info("Processed user.updated for user #{user.id}")
+  end
+end
+
+# Graceful shutdown handling
+trap("INT") do
+  puts "\nShutting down subscriber..."
+  subscriber&.stop!
+  exit 0
+end
+
+trap("TERM") do
+  puts "\nShutting down subscriber..."
+  subscriber&.stop!
+  exit 0
+end
+
+# Start subscriber (blocks)
+puts "Starting UserEventsSubscriber..."
+puts "Press Ctrl+C to stop"
+
+subscriber = UserEventsSubscriber.new
+subscriber.subscribe!

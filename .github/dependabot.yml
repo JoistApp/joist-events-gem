@@ -1,0 +1,14 @@
+---
+version: 2
+registries:
+  codeartifact:
+    type: rubygems-server
+    url: https://jst-hub-artifacts-333592532126.d.codeartifact.us-east-1.amazonaws.com/ruby/jst-private-packages
+    token: ${{secrets.CODEARTIFACT_AUTH_TOKEN}}
+updates:
+  - package-ecosystem: bundler
+    directory: "/"
+    registries:
+      - codeartifact
+    schedule:
+      interval: "weekly"

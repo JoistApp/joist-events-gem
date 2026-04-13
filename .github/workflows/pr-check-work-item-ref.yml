@@ -1,0 +1,82 @@
+---
+
+name: check for work item reference
+
+on:  # yamllint disable-line rule:truthy
+  workflow_dispatch:
+  pull_request:
+    types:
+      - edited
+      - opened
+      - reopened
+      - synchronize
+    branches:
+      - develop
+      - master
+
+jobs:
+  check-for-workitem-ref:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: 'Validate workitem reference in branch or PR title'
+        id: check-for-workitem-ref
+        run: |
+          echo "Begin validation checks..."
+          validated=false
+
+          branch_name=$(echo "${{github.event.pull_request.head.ref}}" | tr '[:upper:]' '[:lower:]')
+          echo "Branch name: $branch_name"
+          pr_title=$(echo "${{github.event.pull_request.title}}" | tr '[:upper:]' '[:lower:]')
+          echo "PR title: $pr_title"
+          pr_creator=$(echo "${{github.event.pull_request.user.login}}" | tr '[:upper:]' '[:lower:]')
+          echo "PR creator: $pr_creator"
+
+          echo "CHECK: Core branch name (develop/integration/staging/release/master)"
+          if [ "$validated" = false ]; then
+            if echo $branch_name | grep -Pq "(^develop$)|(^staging$)|(^master$)|(^release\/.+)|(^integration.*)"; then
+              echo "PASSED."
+              validated=true
+            else
+              echo "<!> Branch name does not match any of the core branch names."
+            fi
+          fi
+
+          echo "CHECK: feature/fix/hotfix branch contains work item reference, e.g. feature/ja-123-my-changes"
+          if [ "$validated" = false ]; then
+            if echo $branch_name | grep -Pq "^((feature)|(fix)|(hotfix))\/[A-Za-z]+-[0-9]+"; then
+              echo "PASSED."
+              validated=true
+            else
+              echo "<!> Branch name does not contain work item reference."
+            fi
+          fi
+
+          echo "CHECK: Pull request title contains work item reference, e.g. \"JA-123 My changes for review\""
+          if [ "$validated" = false ]; then
+            if echo $pr_title | grep -Pq "[A-Za-z]+-[0-9]+"; then
+              echo "PASSED."
+              validated=true
+            else
+              echo "<!> Pull Request title does not contain work item reference."
+            fi
+          fi
+
+          echo "CHECK: Pull request is created automatically by dependabot for security patching"
+          if [ "$validated" = false ]; then
+            if [ "$pr_creator" = "dependabot[bot]" ]; then
+              echo "PASSED."
+              validated=true
+            else
+              echo "<!> Pull Request is not a security patch created by dependabot."
+            fi
+          fi
+
+          if [ "$validated" = false ]; then
+            echo "FAILED VALIDATION."
+            echo "Not a mainline branch name, and could not find a work item reference. Checks fail."
+            echo "Branch name or PR title should include a JIRA work item reference for documentation purposes"
+            echo "  e.g. feature/ja-123-my-changes"
+            echo "Required for compliance obligations, code in production can be traced back to documentation."
+            exit 1
+          fi

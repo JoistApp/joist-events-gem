@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  lib:
+    image: github.com/joistapp/joist-events-gem
+    command: "echo no-op"
+    build:
+      context: .
+      args:
+        CODEARTIFACT_AUTH_TOKEN: ${CODEARTIFACT_AUTH_TOKEN}
+    volumes:
+      - ".:/src"
