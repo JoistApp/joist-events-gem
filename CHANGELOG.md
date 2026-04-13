@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-04-13
+
+### Changed
+- Updated dependency version ranges for better compatibility
+  - `activesupport`: `~> 7.2.0` → `>= 7.2, < 8.2` (now supports Rails 8.x)
+  - `google-cloud-pubsub`: `~> 2.9, >= 2.9.1` → `>= 2.9.1, < 4.0` (now supports v3.x)
+  - `bunny`: `~> 2.22` → `>= 2.22, < 4.0` (now supports v3.x)
+  - `fabrication`: `~> 2.31` → `~> 3.0` (test dependency)
+
 ## [1.0.0] - 2026-04-13
 
 ### Added
@@ -47,4 +56,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No backward compatibility with legacy `joist_pubsub` gem
 - Use dual-write mode for migration from legacy systems
 
+[1.0.1]: https://github.com/JoistApp/joist-events-gem/releases/tag/v1.0.1
 [1.0.0]: https://github.com/JoistApp/joist-events-gem/releases/tag/v1.0.0
