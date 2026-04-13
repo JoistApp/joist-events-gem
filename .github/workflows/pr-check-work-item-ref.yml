@@ -11,8 +11,7 @@ on:  # yamllint disable-line rule:truthy
       - reopened
       - synchronize
     branches:
-      - develop
-      - master
+      - main
 
 jobs:
   check-for-workitem-ref:
